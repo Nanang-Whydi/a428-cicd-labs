@@ -5,17 +5,22 @@ pipeline {
             args '-p 3000:3000'
         }
     }
+    
     stages {
         stage('Build') {
             steps {
+                echo 'Installing dependencies...'
                 sh 'npm install'
             }
         }
+        
         stage('Test') {
             steps {
+                echo 'Running tests...'
                 sh './jenkins/scripts/test.sh'
             }
         }
+        
         stage('Manual Approval') {
             steps {
                 script {
@@ -32,10 +37,17 @@ pipeline {
                 }
             }
         }
+        
         stage('Deploy') { 
             steps {
+                echo 'Deploying application...'
                 sh './jenkins/scripts/deliver.sh' 
-                input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
+                
+                script {
+                    input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
+                }
+                
+                echo 'Stopping application...'
                 sh './jenkins/scripts/kill.sh' 
             }
         }
