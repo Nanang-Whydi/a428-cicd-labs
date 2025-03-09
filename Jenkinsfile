@@ -16,6 +16,22 @@ pipeline {
                 sh './jenkins/scripts/test.sh'
             }
         }
+        stage('Manual Approval') {
+            steps {
+                script {
+                    def userInput = input(
+                        message: 'Apakah Anda menyetujui deployment ke production?',
+                        ok: 'Lanjutkan',
+                        parameters: [
+                            choice(name: 'Approval', choices: ['Yes', 'No'], description: 'Pilih Yes untuk melanjutkan deployment')
+                        ]
+                    )
+                    if (userInput == 'No') {
+                        error('Deployment dihentikan oleh user.')
+                    }
+                }
+            }
+        }
         stage('Deploy') { 
             steps {
                 sh './jenkins/scripts/deliver.sh' 
