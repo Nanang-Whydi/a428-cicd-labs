@@ -9,14 +9,12 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Installing dependencies...'
                 sh 'npm install'
             }
         }
         
         stage('Test') {
             steps {
-                echo 'Running tests...'
                 sh './jenkins/scripts/test.sh'
             }
         }
@@ -40,14 +38,12 @@ pipeline {
         
         stage('Deploy') { 
             steps {
-                echo 'Deploying application...'
                 sh './jenkins/scripts/deliver.sh' 
                 
-                script {
-                    input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
-                }
+                echo 'Menjeda selama 1 menit agar aplikasi tetap berjalan...'
+                sleep 60  // Menunggu selama 1 menit
                 
-                echo 'Stopping application...'
+                echo 'Menghentikan aplikasi secara otomatis setelah 1 menit...'
                 sh './jenkins/scripts/kill.sh' 
             }
         }
